@@ -1,4 +1,4 @@
 animoires
 =========
 
-Draw moire patterns in python
+Draw moire patterns in python.
