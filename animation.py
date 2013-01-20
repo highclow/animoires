@@ -1,33 +1,18 @@
-﻿import gobject
-
-class Animation:
+﻿class Animation:
     
-    def __init__(self):
-        self.stop = True
-        self.darea = None
-        self.frameRate = 25
-        self.t = 0
-        self.movShapes = []
-
-    def init(self, darea, frameRate):
-        self.darea = darea
+    def __init__(self, width, height, frameRate):
         self.frameRate = frameRate
-
-    def run(self):
-        gobject.timeout_add(1000 / self.frameRate, self.changeFrame)
+        self.width = width
+        self.height = height
+        self.frameFrequency = 1.0 / frameRate
+        self.movShapes = []
 
     def addMovShape(self, movShape):
         self.movShapes.append(movShape)
 
-    def changeFrame(self):
-        self.t = self.t + 1
-        self.darea.queue_draw()
-        return not self.stop
-
-    def draw(self, cr):
+    def draw(self, cr, frame):
+        time = frame * self.frameFrequency
         for movShape in self.movShapes:
             cr.save()
-            movShape.setDrawingContext(cr)
-            movShape.move(cr, self.t)
-            movShape.draw(cr)
+            movShape.draw(cr, frame, time)
             cr.restore()

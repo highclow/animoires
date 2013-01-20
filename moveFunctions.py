@@ -1,14 +1,26 @@
-﻿def movBackAndForth(i, c, t):
-    step = 2
-    tm100 = t % 100
-    tm50 = t % 50
-    if (tm100 > 75):
-        return i - ((100 - tm100) * step)
+﻿import math
+
+def periodicTriangle(frequency, amplitude, direction, repNumber, frame, time):
+    if direction == "V":
+        return (0.0, amplitude * (2 * math.asin(math.sin(2 * math.pi * frequency * time)) / math.pi))
     else:
-        if (tm100 > 50):
-            return i - ((tm100 - 50) * step)
-        else:
-            if (tm100 > 25):
-                return i + ((50 - tm100) * step)
-            else:
-                return i + ((tm100) * step)
+        return (amplitude * (2 * math.asin(math.sin(2 * math.pi * frequency * time)) / math.pi), 0.0)
+
+def circle((cX, cY), frequency, direction, (initX, initY), repNumber, frame, time):
+    r = math.sqrt(((cX - initX) ** 2) + ((cY - initY) ** 2))
+    iAngleX = 2 * math.pi * ((initX - cX) / r)
+    iAngleY = 2 * math.pi * ((initY - cY) / r)
+    print iAngleX
+    print iAngleY
+    if direction == "H":
+        print (2 * math.pi * frequency * time) + iAngleX
+        rx = cX + (r * math.cos((2 * math.pi * frequency * time) + iAngleX))
+        ry = cY + (r * math.sin((2 * math.pi * frequency * time) + iAngleY))
+        return (rx, ry)
+    else:
+        rx = cX + (r * math.cos(-2 * math.pi * frequency * time))
+        ry = cY + (r * math.sin(-2 * math.pi * frequency * time))
+        return (rx, ry)
+
+def arithmeticRep(progX, progY, repNumber, frame, time):
+    return (progX * repNumber, progY * repNumber)
