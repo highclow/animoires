@@ -1,27 +1,23 @@
 ﻿import cairo
 import math
+from shapes import Shape
 from position import Position
 from repeater import Repeater
 from lineproperties import LineProperties
 
-class Ellipses():
 
-    def __init__(self, initialRadius, (initalScaleX, initalScaleY), position, repeater, lineProperties):
+class Ellipses(Shape):
+
+    def __init__(self, initialRadius, (initalScaleX, initalScaleY),
+            position, repeater, lineProperties):
+        Shape.__init__(self, position, repeater, lineProperties, self.initialEllipse)
         self.initialRadius = initialRadius
         self.initalScaleX = initalScaleX
         self.initalScaleY = initalScaleY
-        self.position = position
-        self.repeater = repeater
-        self.lineProperties = lineProperties
 
-    def draw(self, cr, frame, time):
-        self.position.move(cr, frame, time)
-        self.lineProperties.setInitialDrawingContext(cr)
-        self.repeater.repeat(cr, frame, time, self.lineProperties, self.drawInitialEllipse)
-
-    def drawInitialEllipse(self, cr):
+    def initialEllipse(self, cr):
         cr.save()
         cr.scale(self.initalScaleX, self.initalScaleY)
-        cr.arc(0, 0, self.initialRadius, 0, 2*math.pi)
+        cr.arc(0, 0, self.initialRadius, 0, 2 * math.pi)
         cr.stroke()
         cr.restore()

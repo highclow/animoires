@@ -1,5 +1,5 @@
 ﻿class Animation:
-    
+
     def __init__(self, width, height, frameRate):
         self.frameRate = frameRate
         self.width = width
