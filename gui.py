@@ -13,6 +13,7 @@ class Window(Gtk.Window):
     def __init__(self, animation):
         super(Window, self).__init__()
         self.frame = 0
+        self.time = 0.0
         self.playing = False
         self.animation = animation
         self.init_ui()
@@ -32,7 +33,7 @@ class Window(Gtk.Window):
         self.show_all()
 
     def on_draw(self, wid, cr):
-        self.animation.draw(cr, self.frame)
+        self.animation.draw(cr, self.time)
 
     def on_button_press(self, w, e):
         if e.type == Gdk.EventType.BUTTON_PRESS \
@@ -50,7 +51,13 @@ class Window(Gtk.Window):
 
     def incFrame(self):
         self.frame = self.frame + 1
-        self.darea.queue_draw()
+        self.time = float(self.frame) / self.animation.frameRate
+        if (self.time > self.animation.duration):
+            self.time = 0
+            self.frame = 0
+            self.stopPlaying()
+        else:
+            self.darea.queue_draw()
         return self.playing
 
     def startPlaying(self):

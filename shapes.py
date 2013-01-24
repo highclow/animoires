@@ -1,23 +1,27 @@
-﻿import cairo
-import math
-from position import Position
-from repeater import Repeater
-from lineproperties import LineProperties
+﻿import math
+from transformations import defaultTransformation
+from lineproperties import defaultLineProperties
+from repeaters import defaultRepeater
 
 
 class Shape(object):
 
-    def __init__(self, position, repeater, lineProperties, initialShape):
-        self.position = position
-        self.repeater = repeater
-        self.lineProperties = lineProperties
+    def __init__(self, (initialX, initialY), initialShape,
+            lineProps=defaultLineProperties(),
+            transformation=defaultTransformation(),
+            repeater=defaultRepeater()):
+        self.initialX = initialX
+        self.initialY = initialY
         self.initialShape = initialShape
+        self.lineProps = lineProps
+        self.transformation = transformation
+        self.repeater = repeater
 
-    def draw(self, cr, frame, time):
-        self.position.move(cr, frame, time)
-        self.lineProperties.setInitialDrawingContext(cr)
-        self.repeater.repeat(cr, frame, time,
-            self.lineProperties, self.initialShape)
+    def draw(self, cr, time):
+        cr.translate(self.initialX, self.initialY)
+        self.lineProps.setDrawingContext(cr)
+        self.transformation.transform(cr, time)
+        self.repeater.repeat(cr, time, self.initialShape)
 
 
 class InitialShapeFactory:
@@ -33,8 +37,10 @@ class InitialShapeFactory:
             cr.stroke(), cr.restore())
 
     def getCircle(self, initialRadius):
-        return lambda cr: (cr.arc(0, 0, initialRadius, 0, 2 * math.pi), cr.stroke())
+        return lambda cr: (cr.arc(0, 0, initialRadius, 0, 2 * math.pi),
+            cr.stroke())
 
     def getEllipse(self, initialRadius, (initalScaleX, initalScaleY)):
         return lambda cr: (cr.save(), cr.scale(initalScaleX, initalScaleY),
-            cr.arc(0, 0, initialRadius, 0, 2 * math.pi), cr.stroke(), cr.restore())
+            cr.arc(0, 0, initialRadius, 0, 2 * math.pi), cr.stroke(),
+            cr.restore())

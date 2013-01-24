@@ -2,77 +2,64 @@ import math
 from gi.repository import Gtk, Gdk
 from animation import Animation
 from gui import Window
-from position import Position, PositionTranslaterFactory
-from repeater import Repeater
-from lineproperties import LineProperties
 from shapes import Shape, InitialShapeFactory
-from circles import Circles
-from ellipses import Ellipses
-from lines import Lines
-from moveFunctions import periodicTriangle, circle, arithmeticRep
-from repeatFunctions import arithmeticScale
+from lineproperties import LineProperties
+from transformations import Translation, Rotation, \
+    Scale, Composition, TranslaterFactory, \
+    RotaterFactory, ScalerFactory
+from repeaters import TransformationRepeater, MultiRepeater
 
 
-def animFactory(width, height, frameRate):
-    animation = Animation(width, height, frameRate)
+def animFactory(width, height, duration, frameRate):
+    animation = Animation(width, height, duration, frameRate)
 
     frequency = 0.5
-    amplitude = 30
-    movBF = lambda f, t: periodicTriangle(
-        frequency, amplitude, 1, f, t)
-    movBFM = lambda f, t: periodicTriangle(
-        frequency, -amplitude, "H", n, f, t)
-
-    center = (300, 300)
-    movC = lambda i, f, t: circle(center, frequency, "H", i, f, t)
-    movCM = lambda i, f, t: circle(center, frequency, "A", i, f, t)
-
-    progX1 = 0.0
-    progY1 = 5.0
-    arithScale1 = lambda i, f, t: arithmeticScale(progX1, progY1, i, f, t)
-
-    arithRep1 = lambda i, f, t: arithmeticRep(progX1, progY1, i, f, t)
-
-    progX2 = 1.0
-    progY2 = 1.0
-    arithScale2 = lambda i, f, t: arithmeticScale(progX2, progY2, i, f, t)
+    amplitude = 5
 
     nbRep = 50
-    initRad = 5
+    initRad = 10
 
-    lp = LineProperties((0, 0, 0), 2.0)
+    sX = 1.0
+    sY = 1.0
 
-    pc1 = Position((330, 300), movBFM)
-    rpc1 = Repeater(nbRep, scaler=arithScale1)
-    c1 = Circles(initRad, pc1, rpc1, lp)
-
-    pc2 = Position((270, 300), movBF)
-    rpc2 = Repeater(nbRep, translater=arithRep1, scaler=arithScale1)
-    c2 = Circles(initRad, pc2, rpc2, lp)
-
-    pe1 = Position((300, 300))
-    rpe1 = Repeater(nbRep, scaler=arithScale2)
-    e1 = Ellipses(initRad, (1.0, 1.0), pe1, rpe1, lp)
-
-    pl1 = Position((100, 100))
-    rpl1 = Repeater(70, translater=arithRep1)
-    l1 = Lines(400, pl1, rpl1, lp)
-
-    ptf = PositionTranslaterFactory()
-    
-    tp1 = Position((500,500), translater=ptf.regularLinePath(frequency, amplitude, math.pi/2))
-    tp2 = Position((500, 500))
+    lp = LineProperties((0, 0, 0), 1.0)
 
     isf = InitialShapeFactory()
-    te1 = Shape(tp1, rpe1, lp, isf.getEllipse(initRad, (1.0, 1.0)))
-    tr1 = Shape(tp2, rpe1, lp, isf.getRectangle(10, 10))
+    tf = TranslaterFactory()
+    rf = RotaterFactory()
+    sf = ScalerFactory()
 
+    t1 = Translation(tf.infiniteSegmentBounce(frequency,
+        amplitude, math.pi / 2))
+    t2 = Translation(tf.infiniteCircle((0, 0), frequency, 1, (0, 20)))
+    t3 = Translation(tf.infiniteCircle((0, 0), frequency, -1, (0, 20)))
 
-    animation.addMovShape(te1)
-    animation.addMovShape(tr1)
-    #animation.addMovShape(c1)
-    #animation.addMovShape(c2)
-    #animation.addMovShape(l1)
+    r1 = Rotation(rf.regularFrequencyRotation(frequency))
+    tr1 = Composition([t1, r1])
+    s1 = Scale(sf.arithmeticScale(sX, sY))
+    rp1 = TransformationRepeater(100, s1)
+
+    te1 = Shape((500, 500), isf.getEllipse(5, (1.0, 1.0)),
+        repeater=rp1)
+    te2 = Shape((500, 500), isf.getEllipse(7, (1.1, 1.0)),
+        transformation=t2, repeater=rp1)
+    tr1 = Shape((500, 500), isf.getRectangle(10, 10),
+        repeater=rp1)
+
+    r2 = Rotation(rf.regularFrequencyRotation(1.0 / 240))
+    rp2 = TransformationRepeater(240, r2)
+    l1 = Shape((500, 500), isf.getLine(400, 0),
+        repeater=rp2)
+    l2 = Shape((500, 500), isf.getLine(400, 0),
+        transformation=t2, repeater=rp2)
+    l3 = Shape((500, 500), isf.getLine(400, 0),
+        transformation=t3, repeater=rp2)
+    #animation.addMovShape(te1)
+    #animation.addMovShape(te2)
+    #animation.addMovShape(tr1)
+    animation.addMovShape(l1)
+    animation.addMovShape(l2)
+    animation.addMovShape(l3)
 
     return animation
 
@@ -80,8 +67,9 @@ def animFactory(width, height, frameRate):
 def main():
     width = 1000
     height = 1000
+    duration = 2
     frameRate = 25
-    animation = animFactory(width, height, frameRate)
+    animation = animFactory(width, height, duration, frameRate)
     app = Window(animation)
     Gtk.main()
 
