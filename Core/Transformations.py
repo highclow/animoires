@@ -60,34 +60,32 @@ class Composition(Transformation):
 
 class TranslaterFactory():
 
-    def infiniteSegmentBounce(self, frequency, amplitude, theta):
+    def infiniteSegmentBounce(self, frequency, amplitude, theta=0):
         return lambda value: (lambda dist=amplitude * (2 * math.asin(
             math.sin(2 * math.pi * frequency * value)) / math.pi):
             (math.cos(theta) * dist, math.sin(theta) * dist))()
 
-    def infiniteCircle(self, (cX, cY), frequency, direction, (initX, initY)):
-        return lambda value: (lambda r=math.sqrt(
-            ((cX - initX) ** 2) + ((cY - initY) ** 2)):
-            (lambda iAngleX=2 * math.pi * ((initX - cX) / r),
-                iAngleY=2 * math.pi * ((initY - cY) / r):
-                (lambda rx=cX + (r * math.cos(
-                    (direction * 2 * math.pi * frequency * value) + iAngleX)),
-                ry=cY + (r * math.sin(
-                    (direction * 2 * math.pi * frequency * value) + iAngleY)):
-                (rx, ry))))()()()
+    def infiniteCircle(self, frequency, (initX, initY), (cX, cY), direction=1.0):
+        return lambda value: (lambda dx=(initX - cX), dy = (initY - cY):
+            (lambda r=math.sqrt((dx ** 2) + (dy ** 2)), pi2=(2 * math.pi):
+            (lambda cAngle=(direction * pi2 * frequency * value),
+                iAngleX=(dx / r), iAngleY=(dy / r):
+                (lambda rx=(r * math.cos(cAngle + iAngleX) - dx),
+                    ry=(r * math.sin(cAngle + iAngleY) - dy):
+                    (rx, ry)))))()()()()
 
-    def infiniteDirection(self, amplitude, theta):
+    def infiniteDirection(self, amplitude, theta=0):
         return lambda value: (lambda dist=amplitude * value:
             (math.cos(theta) * dist, math.sin(theta) * dist))()
 
 
 class RotaterFactory():
-    def regularFrequencyRotation(self, frequency):
-        return lambda value: 2 * math.pi * frequency * value
+    def regularFrequencyRotation(self, frequency, direction=1):
+        return lambda value: direction * 2 * math.pi * frequency * value
 
 
 class ScalerFactory():
-    def arithmeticScale(self, progX, progY):
+    def arithmeticScale(self, (progX, progY)):
         return lambda value: (1.0 + (progX * value), 1.0 + (progY * value))
 
 

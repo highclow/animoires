@@ -25,11 +25,11 @@ class PngDrawer(object):
             surface.write_to_png(fileName)  # Output to PNG
 
     def drawAnimationPngs(self, dirName):
-        time = 0
-        nbFrames = int(self.animation.duration * self.animation.frameRate)
-        nbDigits = format(len(str(nbFrames)), "02d")
-        for frame in range(nbFrames):
-            fileName = dirName + "/" + format(frame, nbDigits + "d")
-            self.drawPng(fileName, time)
-            frame = frame + 1
+        for frame in range(self.animation.nbFrames):
+            fileName = self.getPngFileName(dirName, frame)
             time = frame / self.animation.frameRate
+            self.drawPng(fileName, time)
+
+    def getPngFileName(self, dirName, frame):
+        return dirName + "/" + format(frame, self.animation.frameFormat) + ".png"
+            

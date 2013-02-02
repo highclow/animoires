@@ -33,6 +33,7 @@ class Window(Gtk.Window):
         self.show_all()
 
     def on_draw(self, wid, cr):
+        cr.scale(1.0,1.0)
         self.animation.draw(cr, self.time)
 
     def on_button_press(self, w, e):
@@ -62,7 +63,8 @@ class Window(Gtk.Window):
 
     def startPlaying(self):
         self.playing = True
-        gobject.timeout_add(1000 / self.animation.frameRate, self.incFrame)
+        gobject.timeout_add(int(1000 / self.animation.frameRate),
+            self.incFrame)
 
     def stopPlaying(self):
         self.playing = False

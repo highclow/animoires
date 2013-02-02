@@ -1,7 +1,7 @@
 ﻿import math
-from transformations import defaultTransformation
-from lineproperties import defaultLineProperties
-from repeaters import defaultRepeater
+from Transformations import defaultTransformation
+from LineProperties import defaultLineProperties
+from Repeaters import defaultRepeater
 
 
 class Shape(object):
@@ -37,7 +37,7 @@ class InitialShapeFactory:
             cr.stroke(), cr.restore())
 
     def getCircle(self, initialRadius):
-        return lambda cr: (cr.arc(0, 0, initialRadius, 0, 2 * math.pi),
+        return lambda cr: (cr.arc(0, 0, float(initialRadius), 0, 2 * math.pi),
             cr.stroke())
 
     def getEllipse(self, initialRadius, (initalScaleX, initalScaleY)):
