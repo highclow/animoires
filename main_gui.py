@@ -2,14 +2,22 @@ import cProfile
 import pstats
 import math
 import cairo
+import jsonpickle
 from gi.repository import Gtk, Gdk
+from Core.Animation import Animation
 from Animations.AnimationFactory import AnimationFactory
-from Printers.Gui import Window
+from Controllers.Gui import Window
+
 
 def main():
     animationFactory = AnimationFactory()
-    animation = animationFactory.getAnimation('animoire_1')
-    if animation is not None:
+    animation = animationFactory.getAnimation('test3')
+    #f = open('test.json')
+    #json_str = f.read()
+    #animation = jsonpickle.decode(json_str)
+
+    if (isinstance(animation, Animation) and
+        animation is not None):
         app = Window(animation)
         Gtk.main()
     else:

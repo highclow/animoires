@@ -33,7 +33,6 @@ class Window(Gtk.Window):
         self.show_all()
 
     def on_draw(self, wid, cr):
-        cr.scale(1.0,1.0)
         self.animation.draw(cr, self.time)
 
     def on_button_press(self, w, e):

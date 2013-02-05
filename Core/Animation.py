@@ -1,4 +1,4 @@
-﻿class Animation:
+﻿class Animation(object):
 
     def __init__(self, width, height, duration, frameRate, movingShapes=[]):
         self.width = width

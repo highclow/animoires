@@ -1,26 +1,34 @@
 ﻿from Core.Animation import Animation
-from Core.Shapes import InitialShapeFactory
-from Core.Transformations import TranslaterFactory, \
-    RotaterFactory, ScalerFactory
-from AnimationBasesFactory import AnimationBasesFactory
-import animoire_1
+from Core.Transformations.Transformations import ScalerFactory
+from AnimationBaseFactory import AnimationBaseFactory
+#import animoire_1
+#import animoire_2
+import animoire_3
 
 
 class AnimationFactory(object):
 
     def __init__(self):
-        animationBasesFactory = AnimationBasesFactory()
-        initialShapeFactory = InitialShapeFactory()
-        translaterFactory = TranslaterFactory()
-        rotaterFactory = RotaterFactory()
+        animationBaseFactory = AnimationBaseFactory()
+        #initialShapeFactory = InitialShapeFactory()
+        #translaterFactory = TranslaterFactory()
+        #rotaterFactory = RotaterFactory()
         scalerFactory = ScalerFactory()
-
         self.animations = {
-            'animoire_1':animoire_1.getAnimation(
-                animationBasesFactory,
-                initialShapeFactory,
-                translaterFactory,
-                rotaterFactory)
+            #'test1': animoire_1.getAnimation(
+            #    animationBaseFactory,
+            #    initialShapeFactory,
+            #    translaterFactory,
+            #    rotaterFactory),
+            #'test2': animoire_2.getAnimation(
+            #    animationBaseFactory,
+            #    initialShapeFactory,
+            #    translaterFactory,
+            #    rotaterFactory,
+            #    scalerFactory)
+            'test3': animoire_3.getAnimation(
+                animationBaseFactory,
+                scalerFactory)
         }
 
     def getAnimation(self, animationName):
@@ -28,5 +36,3 @@ class AnimationFactory(object):
             return  self.animations[animationName]
         else:
             return None
-
-

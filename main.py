@@ -3,20 +3,26 @@ import pstats
 import math
 import cairo
 from gi.repository import Gtk, Gdk
-from Printers.PngDrawer import PngDrawer
-from Printers.VideoMaker import VideoMaker
-
-
+from Controllers.PngDrawer import PngDrawer
+from Controllers.VideoMaker import VideoMaker
 from Animations.AnimationFactory import AnimationFactory
-from Printers.Gui import Window
+
+from Controllers.JsonPrinter import JsonPrinter
+from Controllers.Marshaller import Marshaller
+
 
 def main():
-    fileName = "test.mp4"
+    videoFileName = "test.mp4"
+    jsonFileName = "test.json"
+    anmFileName = "test.anm"
+
     animationFactory = AnimationFactory()
-    animation = animationFactory.getAnimation('animoire_1')
+    animation = animationFactory.getAnimation('test2')
     if animation is not None:
-        videoMaker = VideoMaker()
-        videoMaker.makeClean(animation, fileName)
+        #videoMaker = VideoMaker()
+        #videoMaker.makeClean(animation, videoFileName)
+        jsonPrinter = JsonPrinter()
+        jsonPrinter.printObject(animation, jsonFileName)
     else:
         print 'Couldn''t generate animation ...'
 

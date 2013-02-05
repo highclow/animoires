@@ -31,5 +31,5 @@ class PngDrawer(object):
             self.drawPng(fileName, time)
 
     def getPngFileName(self, dirName, frame):
-        return dirName + "/" + format(frame, self.animation.frameFormat) + ".png"
-            
+        return dirName + "/" +\
+            format(frame, self.animation.frameFormat) + ".png"

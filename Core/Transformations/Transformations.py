@@ -1,13 +1,14 @@
 ﻿import math
 import cairo
+import sys
 
 
-class Transformation(object):
-
-    pass
-
-
-class IdentityTransformation(Transformation):
+#class Transformation(object):
+#
+#    pass
+#
+#
+class IdentityTransformation(object):
 
     def __init__(self):
         pass
@@ -16,7 +17,7 @@ class IdentityTransformation(Transformation):
         pass
 
 
-class Translation(Transformation):
+class Translation(object):
 
     def __init__(self, translater):
         self.translater = translater
@@ -26,7 +27,7 @@ class Translation(Transformation):
         cr.translate(tX, tY)
 
 
-class Rotation(Transformation):
+class Rotation(object):
 
     def __init__(self, rotater):
         self.rotater = rotater
@@ -36,7 +37,7 @@ class Rotation(Transformation):
         cr.rotate(angle)
 
 
-class Scale(Transformation):
+class Scale(object):
 
     def __init__(self, scaler):
         self.scaler = scaler
@@ -48,7 +49,7 @@ class Scale(Transformation):
         cr.set_line_width(lw / max(sX, sY))
 
 
-class Composition(Transformation):
+class Composition(object):
 
     def __init__(self, transformationList):
         self.transformationList = transformationList
@@ -58,33 +59,38 @@ class Composition(Transformation):
             t.transform(cr, value)
 
 
-class TranslaterFactory():
+class TranslaterFactory(object):
 
     def infiniteSegmentBounce(self, frequency, amplitude, theta=0):
         return lambda value: (lambda dist=amplitude * (2 * math.asin(
             math.sin(2 * math.pi * frequency * value)) / math.pi):
             (math.cos(theta) * dist, math.sin(theta) * dist))()
 
-    def infiniteCircle(self, frequency, (initX, initY), (cX, cY), direction=1.0):
-        return lambda value: (lambda dx=(initX - cX), dy = (initY - cY):
-            (lambda r=math.sqrt((dx ** 2) + (dy ** 2)), pi2=(2 * math.pi):
-            (lambda cAngle=(direction * pi2 * frequency * value),
-                iAngleX=(dx / r), iAngleY=(dy / r):
-                (lambda rx=(r * math.cos(cAngle + iAngleX) - dx),
-                    ry=(r * math.sin(cAngle + iAngleY) - dy):
-                    (rx, ry)))))()()()()
+    def infiniteCircle(self, frequency, (initX, initY), (cX, cY), direction=1):
+        d = math.copysign(1, direction)
+        dx = (initX - cX)
+        dy = (initY - cY)
+        r = math.sqrt((dx ** 2) + (dy ** 2))
+        signeAngle = math.copysign(1, math.asin(dy / r))
+        iAngle = signeAngle * math.acos(dx / r)
+        return lambda value: (lambda
+            cAngle=(d * 2 * math.pi * frequency * value):
+            (lambda rx=(r * math.cos(cAngle + iAngle) - dx),
+                ry=(r * math.sin(cAngle + iAngle) - dy):
+                (rx, ry)))()()
 
     def infiniteDirection(self, amplitude, theta=0):
         return lambda value: (lambda dist=amplitude * value:
             (math.cos(theta) * dist, math.sin(theta) * dist))()
 
 
-class RotaterFactory():
+class RotaterFactory(object):
     def regularFrequencyRotation(self, frequency, direction=1):
-        return lambda value: direction * 2 * math.pi * frequency * value
+        d = math.copysign(1, direction)
+        return lambda value: d * 2 * math.pi * frequency * value
 
 
-class ScalerFactory():
+class ScalerFactory(object):
     def arithmeticScale(self, (progX, progY)):
         return lambda value: (1.0 + (progX * value), 1.0 + (progY * value))
 

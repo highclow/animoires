@@ -8,34 +8,28 @@ from PngDrawer import PngDrawer
 class VideoMaker(object):
 
     defaultTmpDir = 'tmp'
-    defaultVideoParams = {'y':'', 'r':'25','f':'image2',\
-        'b':'100000k'}
+    defaultVideoParams = {'y': '', 'r': '25', 'f': 'image2', \
+        'b': '100000k'}
     defaultEncoder = 'avconv'
-    
-    def __init__(self, tmpDir=defaultTmpDir,
-        encoder=defaultEncoder, videoParams=defaultVideoParams):
+
+    def __init__(self, tmpDir=defaultTmpDir, encoder=defaultEncoder,
+        videoParams=defaultVideoParams):
         self.tmpDir = tmpDir
         self.videoParams = videoParams
         self.encoder = encoder
 
     def makeClean(self, animation, fileName):
-        
-        # Delete tmpDir if it exists
+
         if os.path.exists(self.tmpDir):
-            shutil.rmtree(self.tmpDir)
+            shutil.rmtree(self.tmpDir)  # Delete tmpDir if it exists
 
-        # Recreate tmpDir
-        os.makedirs(self.tmpDir)
+        os.makedirs(self.tmpDir)  # Recreate tmpDir
 
-        # Draw animation pngs in tmpDir
-        self.drawPngs(animation)
+        self.drawPngs(animation)  # Draw animation pngs in tmpDir
 
-        # Encode video using ffmpeg and params
-        self.encodeVideo(fileName, animation)
+        self.encodeVideo(fileName, animation)  # Encode video (encoder, params)
 
-        # Delete tmpDir
-        shutil.rmtree(self.tmpDir)
-
+        shutil.rmtree(self.tmpDir)  # Delete tmpDir
 
     def drawPngs(self, animation):
         pngDrawer = PngDrawer(animation)
@@ -52,6 +46,5 @@ class VideoMaker(object):
 
     def encodeVideo(self, fileName, animation):
         paramString = self.buildCommandLine(fileName, animation.frameFormat)
-        print paramString
         args = shlex.split(paramString)
         check_call(args)

@@ -1,7 +1,7 @@
 ﻿import cairo
 
 
-class LineProperties:
+class LineProperties(object):
 
     def __init__(self, initialRGB, initialLW, changer=None):
         self.initialRGB = initialRGB

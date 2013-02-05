@@ -1,16 +1,10 @@
 ﻿import cairo
-from Transformations import IdentityTransformation
+from Transformations.Translations import Translation
 
-
-class Repeater:
-
-    pass
-
-
-class TransformationRepeater:
+class TransformationRepeater(object):
 
     def __init__(self, numberRepetitions,
-            transformation=IdentityTransformation(),
+            transformation=Translation(),
             indexChanger=lambda x, y: x):
         self.numberRepetitions = numberRepetitions
         self.transformation = transformation
@@ -26,7 +20,7 @@ class TransformationRepeater:
             cr.restore()
 
 
-class MultiRepeater:
+class MultiRepeater(object):
 
     def __init__(self, repeaters):
         self.repeaters = repeaters
