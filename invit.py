@@ -1,17 +1,5 @@
 #!/usr/bin/python
 
-'''
-ZetCode PyCairo tutorial 
-
-In this program, we connect all mouse
-clicks with a line.
-
-author: Jan Bodnar
-website: zetcode.com 
-last edited: August 2012
-'''
-
-
 from gi.repository import Gtk, Gdk
 import cairo
 
@@ -39,10 +27,13 @@ class Example(Gtk.Window):
         self.add(self.darea)
         
         #self.coords = []
-        self.w = 1000
-        self.h = 600
+        self.w = 520
+        self.h = 200
         self.linePos = 4
-        self.grid = True;
+        self.text = True
+        self.grid = True
+        self.printPng = False
+
 
         self.darea.connect("button-press-event", self.on_button_press)
         self.connect('key_press_event', self.on_key_press_event)
@@ -79,13 +70,15 @@ class Example(Gtk.Window):
         lcr.select_font_face(fontFace, cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
         lcr.set_font_size(fontSize)
         (x, y, width, height, dx, dy) = lcr.text_extents(text)
-        lcr.move_to(self.w / 2 - width / 2, self.h / 2 - height / 2)
+        lcr.move_to(self.w / 2 - width / 2, self.h / 2)
         lcr.show_text(text)
         
         return s
 
     def on_draw(self, wid, cr):
-        self.paintTransparentBackground(cr)
+        imgSurface = cairo.ImageSurface(cairo.FORMAT_ARGB32, self.w, self.h)
+        imgCr = cairo.Context(imgSurface)
+        self.paintTransparentBackground(imgCr)
         textList = ['Save  the  Date', '' , 'Melissa & Joseph', '', '17  Mai  2014', '']
         
         originX = 10
@@ -100,14 +93,21 @@ class Example(Gtk.Window):
         nbLines = 150
         lineWidth = 1.0
 
-        for i, text in enumerate(textList):
-            localMove = lineWidth * i
-            lx = originX + localMove # Move text by one linewidth
-            cr.set_source_surface(self.getTextSurface(text, lx, originY, fontFace, fontSize), 0, 0)
-            cr.mask_surface(self.getGridSurface(nbLines, lineWidth, offsetX, localMove), 0, 0)
+        if (self.text):
+            for i, text in enumerate(textList):
+                localMove = lineWidth * i
+                lx = originX + localMove # Move text by one linewidth
+                imgCr.set_source_surface(self.getTextSurface(text, lx, originY, fontFace, fontSize), 0, 0)
+                imgCr.mask_surface(self.getGridSurface(nbLines, lineWidth, offsetX, localMove), 0, 0)
         if self.grid:
-            cr.set_source_surface(self.getGridSurface(nbLines, offsetX - lineWidth, offsetX, self.linePos))
-            cr.paint() 
+            imgCr.set_source_surface(self.getGridSurface(nbLines, offsetX - lineWidth, offsetX, self.linePos))
+            imgCr.paint()
+
+        if (self.printPng):
+            imgSurface.write_to_png("img.png")
+            self.printPng = False
+        cr.set_source_surface(imgSurface)
+        cr.paint()
                                               
     def on_button_press(self, w, e):
         if e.type == Gdk.EventType.BUTTON_PRESS \
@@ -122,8 +122,12 @@ class Example(Gtk.Window):
 
     def on_key_press_event(self, w, e):
         keyname = Gdk.keyval_name(e.keyval)
+        if keyname == 't':
+            self.text = not self.text
         if keyname == 'g':
             self.grid = not self.grid
+        if keyname == 'p':
+            self.printPng = True
         self.darea.queue_draw()
 
     
